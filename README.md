@@ -2,6 +2,10 @@
 
 Demo completo de aplicación Oracle APEX con base de datos, PL/SQL avanzado y más.
 
+## 📋 Descripción
+
+Este proyecto contiene un esquema de base de datos completo para Oracle APEX con tablas, procedimientos, funciones, triggers y vistas para gestionar empleados, departamentos, trabajos y ubicaciones.
+
 ## 📋 Contenido
 
 ### Esquema de Base de Datos
@@ -35,10 +39,31 @@ Demo completo de aplicación Oracle APEX con base de datos, PL/SQL avanzado y m�
 
 ## 🚀 Instalación
 
-1. Abrir Oracle APEX Workspace
-2. Importar este código en SQL Workshop
-3. Ejecutar `schema.sql`
-4. Crear nueva aplicación basada en las tablas
+### Prerrequisitos
+
+- Oracle Database 19c o superior
+- Oracle APEX 21.x o superior
+
+### Pasos
+
+1. **Abrir Oracle APEX Workspace**
+   - Accede a tu instancia de Oracle APEX
+   - Inicia sesión con tus credenciales
+
+2. **Importar el esquema**
+   - Ve a **SQL Workshop** > **SQL Commands**
+   - Copia y ejecuta el contenido de `schema.sql`
+   - O usa **SQL Workshop** > **Object Browser** > **Run Script**
+
+3. **Verificar tablas**
+   ```sql
+   SELECT table_name FROM user_tables;
+   ```
+
+4. **Crear aplicación APEX**
+   - Ve a **App Builder**
+   - Nueva > From Scratch > Blank
+   - Follow the wizard
 
 ## 📦 Procedimientos PL/SQL
 
@@ -220,14 +245,34 @@ LEFT JOIN employees e ON d.department_id = e.department_id
 GROUP BY d.department_id, d.department_name;
 ```
 
+## 📁 Estructura del Proyecto
+
+```
+oracle-apex-demo/
+├── schema.sql          # Esquema completo de base de datos
+├── README.md           # Este archivo
+└── .gitignore         # Archivos ignorados
+```
+
+## 🤝 Contribuir
+
+1. Fork el repositorio
+2. Crea una rama (`git checkout -b feature/nueva-caracteristica`)
+3. Commit tus cambios
+4. Push a la rama
+5. Abre un Pull Request
+
+## 📝 Changelog
+
+- **v1.1.0** - Esquema completo con todas las tablas
+- **v1.0.0** - Versión inicial
+
 ## 📄 Licencia
 
-MIT
+MIT License
 
 ---
 
-**GitHub**: [alexkore12](https://github.com/alexkore12)
+## 🇬🇧 English
 
-## 🤖 Actualizado por
-
-OpenClaw AI Assistant - 2026-03-21
+Complete Oracle APEX demo application with database schema, advanced PL/SQL procedures, functions, triggers, and views for managing employees, departments, jobs, and locations.
