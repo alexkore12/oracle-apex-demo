@@ -1,7 +1,11 @@
-# Oracle APEX
+# Logs
 *.log
-*.lst
-*.out
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
 
 # OS
 .DS_Store
@@ -10,3 +14,11 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+
+# Build
+dist/
+build/
+*.egg-info/
