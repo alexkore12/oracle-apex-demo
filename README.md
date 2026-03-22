@@ -213,6 +213,18 @@ oracle-apex-demo/
 
 - **v1.0.0** - Esquema básico
 - **v1.1.0** - Auditoría, índices, mejoras
+- **v1.2.0** - Mejoras de seguridad PL/SQL
+
+## 🔒 Seguridad
+
+### Mejores prácticas para Oracle APEX
+
+- **Autenticación**: Usar autenticación de APEX con roles
+- **Authorization**: Definir esquemas de autorización por grupo
+- **SQL Injection**: Usar binds (`:VAR`) en lugar de concatenación
+- **PL/SQL**: Validar entrada en procedimientos almacenados
+- **Auditoría**: Tabla de auditoría habilitada (`audit_log`)
+- **OWA**: Protecciones contra OWA Injection
 
 ## 🤝 Contribución
 
