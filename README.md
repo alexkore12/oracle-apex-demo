@@ -1,235 +1,251 @@
-# 🗄️ Oracle APEX Demo
+# Oracle APEX Demo
 
-Aplicación demo completa para Oracle APEX con ejemplos avanzados de PL/SQL y diseño de base de datos empresarial.
+Demo completo de aplicación Oracle APEX con base de datos, PL/SQL avanzado y más.
 
-## 📋 Descripción
+## 📋 Contenido
 
-Este proyecto contiene un esquema de base de datos completo para Oracle APEX con ejemplos de:
-- Tablas relacionales con jerarquías
-- Procedures y funciones PL/SQL
-- Triggers para auditoría
-- Vistas materializadas
-- Índices optimizados
-
-## 🛠️ Componentes
-
-### Tablas Principales
+### Esquema de Base de Datos
 
 | Tabla | Descripción |
 |-------|-------------|
-| `employees` | Empleados con datos personales y laborales |
-| `departments` | Departamentos organizacionales |
-| `jobs` | Catálogo de puestos |
+| `employees` | Empleados de la empresa |
+| `departments` | Departamentos |
+| `jobs` | Posiciones/tipos de trabajo |
 | `locations` | Ubicaciones geográficas |
 | `audit_log` | Auditoría de cambios |
 
-### Características
+### Columnas de Employees
 
-- ✅ **IDENTITY Columns** - Auto-increment nativos
-- ✅ **Auditoría Completa** - Tracking de cambios
-- ✅ **Índices Optimizados** - Para mejor rendimiento
-- ✅ **Relaciones** - Foreign keys bien definidas
-- ✅ **Tipos de Datos** - VARCHAR2, NUMBER, DATE, TIMESTAMP, CLOB
+| Columna | Tipo | Descripción |
+|---------|------|-------------|
+| employee_id | NUMBER | ID auto-generado |
+| first_name | VARCHAR2 | Nombre |
+| last_name | VARCHAR2 | Apellido |
+| email | VARCHAR2 | Email único |
+| phone_number | VARCHAR2 | Teléfono |
+| hire_date | DATE | Fecha de contratación |
+| job_id | VARCHAR2 | ID del trabajo |
+| salary | NUMBER | Salario |
+| commission_pct | NUMBER | Porcentaje de comisión |
+| manager_id | NUMBER | ID del manager |
+| department_id | NUMBER | ID del departamento |
+| is_active | NUMBER | Estado activo/inactivo |
+| created_at | TIMESTAMP | Fecha de creación |
+| updated_at | TIMESTAMP | Última actualización |
 
 ## 🚀 Instalación
 
-### Prerrequisitos
+1. Abrir Oracle APEX Workspace
+2. Importar este código en SQL Workshop
+3. Ejecutar `schema.sql`
+4. Crear nueva aplicación basada en las tablas
 
-- Oracle Database 12c+
-- Oracle APEX 18.1+
-- SQL*Plus o SQL Developer
+## 📦 Procedimientos PL/SQL
 
-### Pasos
+### add_employee
 
-1. **Conectar a Oracle:**
-
-```bash
-sqlplus system/password@localhost:1521/orclpdb1
-```
-
-2. **Ejecutar el esquema:**
+Inserta nuevo empleado con parámetros:
 
 ```sql
-@schema.sql
+BEGIN
+    add_employee(
+        p_first_name => 'Juan',
+        p_last_name => 'Pérez',
+        p_email => 'juan@example.com',
+        p_job_id => 'DEV',
+        p_salary => 75000,
+        p_department_id => 20
+    );
+END;
+/
 ```
 
-3. **Verificar tablas:**
+### update_employee
+
+Actualiza información del empleado:
 
 ```sql
-SELECT table_name FROM user_tables ORDER BY table_name;
+BEGIN
+    update_employee(
+        p_employee_id => 1,
+        p_salary => 80000,
+        p_department_id => 20
+    );
+END;
+/
 ```
 
-4. **Crear aplicación APEX:**
+### deactivate_employee
 
-- Abre APEX (`http://localhost:8080/apex`)
-- Crea una nueva aplicación
-- Usa las tablas creadas como fuente de datos
-
-## 📊 Estructura del Esquema
-
-### Diagrama Entidad-Relación
-
-```
-┌──────────────┐       ┌──────────────┐
-│  departments │       │    jobs      │
-├──────────────┤       ├──────────────┤
-│ department_id│◄──────│   job_id     │
-│ dept_name    │       │ job_title    │
-│ manager_id   │       │ min_salary   │
-│ location_id  │       │ max_salary   │
-└──────┬───────┘       └──────────────┘
-       │
-       │ 1:N
-       ▼
-┌──────────────┐       ┌──────────────┐
-│  employees   │       │  locations   │
-├──────────────┤       ├──────────────┤
-│ employee_id  │       │ location_id  │
-│ first_name   │       │ city         │
-│ last_name    │       │ country_id   │
-│ email        │       │ postal_code  │
-│ department_id│──────►│              │
-│ job_id       │       └──────────────┘
-│ salary       │
-└──────────────┘
-```
-
-## 📝 Tablas Detalladas
-
-### employees
+Desactiva un empleado (soft delete):
 
 ```sql
-CREATE TABLE employees (
-    employee_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    first_name VARCHAR2(50) NOT NULL,
-    last_name VARCHAR2(50) NOT NULL,
-    email VARCHAR2(100) UNIQUE NOT NULL,
-    phone_number VARCHAR2(20),
-    hire_date DATE DEFAULT SYSDATE,
-    job_id VARCHAR2(20),
-    salary NUMBER(10,2),
-    commission_pct NUMBER(5,2),
-    manager_id NUMBER,
-    department_id NUMBER,
-    is_active NUMBER(1) DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+BEGIN
+    deactivate_employee(p_employee_id => 5);
+END;
+/
 ```
 
-### audit_log
+## 📊 Funciones
+
+### get_department_total_salary
+
+Obtiene suma de salarios por departamento:
 
 ```sql
-CREATE TABLE audit_log (
-    audit_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    table_name VARCHAR2(50),
-    action VARCHAR2(20),
-    old_values CLOB,
-    new_values CLOB,
-    user_name VARCHAR2(100),
-    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ip_address VARCHAR2(50)
-);
+SELECT get_department_total_salary(20) FROM dual;
 ```
 
-## 🔧 Procedures y Funciones
+### calculate_total_compensation
 
-El esquema incluye procedures para:
-
-- `create_employee` - Crear empleado
-- `update_employee` - Actualizar empleado
-- `delete_employee` - Eliminar empleado (soft delete)
-- `get_employee_details` - Obtener detalles
-- `calculate_bonus` - Calcular bono
-
-## 📈 Índices
+Calcula salary + comisión:
 
 ```sql
-CREATE INDEX idx_emp_dept ON employees(department_id);
-CREATE INDEX idx_emp_manager ON employees(manager_id);
-CREATE INDEX idx_emp_email ON employees(email);
-CREATE INDEX idx_emp_job ON employees(job_id);
-CREATE INDEX idx_emp_active ON employees(is_active);
+SELECT calculate_total_compensation(75000, 15) FROM dual;
+-- Resultado: 86250
 ```
 
-## 🧪 Queries de Ejemplo
+### is_valid_email
 
-### Lista de empleados por departamento
+Valida formato de email:
 
 ```sql
-SELECT e.first_name, e.last_name, d.department_name, j.job_title
-FROM employees e
-JOIN departments d ON e.department_id = d.department_id
-JOIN jobs j ON e.job_id = j.job_id
-WHERE e.is_active = 1
-ORDER BY d.department_name, e.last_name;
+SELECT is_valid_email('test@example.com') FROM dual;
+-- Resultado: 1 (true)
 ```
 
-### Total salarial por departamento
+## 👁️ Vistas
+
+### v_employee_details
+
+Vista completa de empleados con información relacionada:
 
 ```sql
-SELECT d.department_name,
-       COUNT(e.employee_id) as employees,
-       SUM(e.salary) as total_salary,
-       ROUND(AVG(e.salary), 2) as avg_salary
-FROM departments d
-LEFT JOIN employees e ON d.department_id = e.department_id
-GROUP BY d.department_id, d.department_name
-ORDER BY total_salary DESC;
+SELECT * FROM v_employee_details WHERE department_id = 20;
 ```
 
-## 🔐 Seguridad
+### v_org_chart
 
-- Emails únicos con constraint UNIQUE
-- Validación de datos con CHECK constraints
-- Auditoría de todos los cambios
-- Soft deletes (is_active)
+Estructura organizacional jerárquica:
 
-## 📁 Archivos
-
-```
-oracle-apex-demo/
-├── schema.sql     # Esquema completo
-└── README.md      # Este archivo
+```sql
+SELECT * FROM v_org_chart;
 ```
 
-## 🔨 Integración con APEX
+### v_department_salary_summary
 
-### Crear Reporte
+Resumen de salarios por departamento:
 
-1. App Builder → New Application
-2. Add Page → Report
-3. Select table: EMPLOYEES
-4. Follow wizard
+```sql
+SELECT * FROM v_department_salary_summary;
+```
+
+## ⚡ Triggers
+
+- `trg_emp_updated` - Actualiza timestamp en cambios
+- `trg_validate_salary` - Valida salary contra rango del job
+- `trg_emp_delete_audit` - Registra deletes en audit log
+
+## 📦 Paquete employee_pkg
+
+```sql
+-- Contar empleados
+SELECT employee_pkg.get_employee_count(20) FROM dual;
+
+-- Obtener empleado por email
+SELECT * FROM TABLE(employee_pkg.get_employee_by_email('juan@example.com'));
+
+-- Contratar empleado
+BEGIN
+    employee_pkg.hire_employee(
+        p_first_name => 'Nuevo',
+        p_last_name => 'Empleado',
+        p_email => 'nuevo@example.com',
+        p_job_id => 'DEV',
+        p_salary => 70000,
+        p_department_id => 20
+    );
+END;
+/
+
+-- Despedir empleado
+BEGIN
+    employee_pkg.fire_employee(p_employee_id => 5);
+END;
+/
+```
+
+## 🛠️ Requisitos
+
+- Oracle Database 19c+
+- Oracle APEX 21+
+
+## 📝 Uso en Oracle APEX
+
+### Crear Interactive Grid
+
+1. Ir a SQL Workshop > Object Browser
+2. Seleccionar tabla `employees`
+3. Crear Interactive Grid
+4. Configurar columnas y validaciones
 
 ### Crear Form
 
-1. Add Page → Form
-2. Select table: EMPLOYEES
-3. Add on page: EMPLOYEE_ID
-4. Follow wizard
-
-## 📝 Changelog
-
-- **v1.0.0** - Esquema básico
-- **v1.1.0** - Auditoría, índices, mejoras
-- **v1.2.0** - Mejoras de seguridad PL/SQL
+1. Ir a App Builder
+2. Nueva página > Form
+3. Seleccionar tabla `employees`
+4. Configurar elementos
 
 ## 🔒 Seguridad
 
-### Mejores prácticas para Oracle APEX
+- Usar secuencias para IDs
+- Constraints apropiados (UNIQUE, NOT NULL, CHECK)
+- Índices para búsquedas
+- Triggers para auditoría
+- Validación de salary contra rangos de jobs
 
-- **Autenticación**: Usar autenticación de APEX con roles
-- **Authorization**: Definir esquemas de autorización por grupo
-- **SQL Injection**: Usar binds (`:VAR`) en lugar de concatenación
-- **PL/SQL**: Validar entrada en procedimientos almacenados
-- **Auditoría**: Tabla de auditoría habilitada (`audit_log`)
-- **OWA**: Protecciones contra OWA Injection
+## 🧪 Funciones de Prueba
 
-## 🤝 Contribución
+```sql
+-- Ver empleados activos
+SELECT * FROM employees WHERE is_active = 1;
 
-¡Mejoras bienvenidas! Abre un issue o PR.
+-- Ver historial de cambios
+SELECT * FROM audit_log ORDER BY change_date DESC;
+
+-- Ver empleados por departamento
+SELECT d.department_name, COUNT(e.employee_id) as empleados
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name;
+```
+
+## 📁 Archivos
+
+| Archivo | Descripción |
+|---------|-------------|
+| `schema.sql` | Esquema completo de base de datos |
+| `README.md` | Este archivo |
+
+## 📝 Changelog
+
+### v1.1.0 (2026-03-21)
+- ✅ Paquete employee_pkg completo
+- ✅ Vistas optimizadas
+- ✅ Documentación mejorada
+
+### v1.0.0 (2026-03-20)
+- ✅ Esquema base
+- ✅ Procedimientos básicos
 
 ## 📄 Licencia
 
-MIT License - Uso libre.
+MIT
+
+---
+
+**GitHub**: [alexkore12](https://github.com/alexkore12)
+
+## 🤖 Actualizado por
+
+OpenClaw AI Assistant - 2026-03-22
