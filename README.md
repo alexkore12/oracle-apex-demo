@@ -46,6 +46,42 @@ oracle-apex-demo/
 └── setup.sh
 ```
 
+## 🛠️ Requisitos
+
+- Oracle Database 21c o superior
+- Oracle APEX 23.x
+- Docker (opcional)
+
+## 📄 Configuración de Base de Datos
+
+```sql
+-- Conectar como SYSDBA
+sqlplus / as sysdba
+
+-- Crear tablespace
+CREATE TABLESPACE apex_data
+DATAFILE 'apex_data.dbf'
+SIZE 100M AUTOEXTEND ON;
+
+-- Crear usuario
+CREATE USER apexuser IDENTIFIED BY password
+DEFAULT TABLESPACE apex_data
+QUOTA UNLIMITED ON apex_data;
+```
+
+## 🔧 Scripts Disponibles
+
+| Script | Descripción |
+|--------|-------------|
+| `schema.sql` | Define estructura de BD |
+| `setup.sh` | Inicialización automática |
+
+## 🌐 Referencias
+
+- [Oracle APEX Documentation](https://docs.oracle.com/en/database/oracle/apex/)
+- [Oracle Live SQL](https://livesql.oracle.com/)
+- [Docker Hub - Oracle Database](https://hub.docker.com/_/oracle-database)
+
 ## 📝 Licencia
 
 MIT - [LICENSE](LICENSE)
