@@ -1,273 +1,122 @@
 # 🗄️ Oracle APEX Demo
 
-> Demo completo de aplicación Oracle Application Express (APEX) con estructura de base de datos, configuración automática y scripts de deployment.
-
 [![Oracle APEX](https://img.shields.io/badge/Oracle%20APEX-23.x-orange.svg)](https://apex.oracle.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
 
 ## 📋 Descripción
 
-Aplicación demo que demuestra las capacidades de Oracle APEX 23.x incluyendo:
-- Esquema de base de datos completo
-- Aplicación web interactiva
-- Reportes y gráficos
-- Autenticación y autorización
-- REST API integration
-- Configuración de deployment automatizada
+Demo completo de aplicación Oracle APEX con estructura de base de datos completa, configuración de setup automática y scripts de deployment.
 
 ## ✨ Características
 
-- 🗄️ **SQL Schema** - Estructura completa con tablas, vistas, secuencias
-- 📦 **Setup Script** - Inicialización automática del esquema
-- 🐳 **Docker** - Oracle XE oORDS en contenedores
-- 🔧 **Health Check** - Verificación de salud del sistema
-- 📚 **Documentación** - Guía completa de uso
-- 🛡️ **Seguridad** - VPD, políticas de seguridad
-- 📊 **Reporting** - Dashboards y reportes
-- 🔄 **REST Services** - Publicación de REST APIs
-- 📱 **Responsive** - Diseño adaptativo
+- 🗄️ **SQL Schema** - Estructura completa de base de datos Oracle
+- 📦 **Setup Script** - Inicialización automática de esquemas
+- 🐳 **Docker** - Contenedorizable con docker-compose
+- 🔧 **Health Check** - Script de verificación de salud
+- 📚 **Documentación** - README completo + DEPLOYMENT.md
+- 🛡️ **Seguridad** - Políticas y configuración de seguridad
+- 💾 **Backup/Restore** - Scripts de backup y recuperación
 
 ## 🚀 Inicio Rápido
 
-### Docker Compose (Recomendado)
+### Docker Compose
 
 ```bash
-# Clonar repositorio
-git clone https://github.com/alexkore12/oracle-apex-demo.git
-cd oracle-apex-demo
-
 # Iniciar servicios
 docker-compose up -d
 
 # Ver estado
 docker-compose ps
 
-# Esperar a que Oracle esté listo (~5 min)
-docker-compose logs -f oracle-xe
+# Cargar schema
+docker exec -i oracle-apex-demo_sql_1 sqlplus sys/<password>@localhost:1521/FREE as sysdba < schema.sql
 
-# Acceder a APEX
-# URL: http://localhost:8080
-# Workspace: INTERNAL
-# User: ADMIN
-# Password: Ver en docker-compose.yml o logs
+# Verificar health
+python health_check.py
 ```
 
-### Configuración Manual
+### Acceder a Oracle APEX
 
-```bash
-# Ejecutar script de setup
-chmod +x setup.sh
-./setup.sh
+Una vez corriendo:
+- **APEX**: http://localhost:8080/apex
+- **Oracle DB**: localhost:1521/FREE
 
-# Conectar a Oracle
-sqlplus usuario/password@//localhost:1521/XEPDB1 @schema.sql
-```
+### Configuración Inicial de APEX
+
+1. Ir a http://localhost:8080/apex
+2. Workspace interno: `INTERNAL`
+3. Usuario: `admin`
+4. Seguir el wizard de configuración inicial
 
 ## 📁 Estructura del Proyecto
 
 ```
 oracle-apex-demo/
 ├── .dockerignore
-├── .env.example
-├── .gitattributes
-├── .gitignore
 ├── .github/
-│   ├── dependabot.yml     # Actualizaciones automáticas
-│   └── CODEOWNERS         # Propietarios
-├── backup_restore.sh      # Script de backup y restore
-├── CODE_OF_CONDUCT.md
+├── .gitignore
 ├── CODEOWNERS
-├── CONTRIBUTING.md        # Guía de contribución
-├── deploy.sh              # Script de despliegue
-├── DEPLOYMENT.md          # Guía de despliegue detallada
-├── docker-compose.yml     # Oracle XE + APEX
-├── health_check.py        # Verificación de salud
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── DEPLOYMENT.md             # Guía detallada de despliegue
 ├── LICENSE
-├── monitor.sh             # Script de monitoreo
 ├── README.md
-├── schema.sql             # Definición completa del esquema
-├── SECURITY.md            # Política de seguridad
-└── setup.sh               # Script de inicialización
+├── SECURITY.md
+├── backup_restore.sh        # Script de backup y restore
+├── deploy.sh                # Script de despliegue
+├── docker-compose.yml       # Oracle DB + APEX
+├── health_check.py          # Verificación de salud
+├── monitor.sh               # Script de monitoreo
+├── schema.sql               # Schema de base de datos completo
+└── setup.sh                 # Script de inicialización
 ```
 
-## 🗄️ Esquema de Base de Datos
+## 🗄️ Schema de Base de Datos
 
-### Tablas Principales
+El archivo `schema.sql` contiene:
+- Definición de tablas principales
+- Índices para optimización de consultas
+- Vistas para reportes
+- Secuencias y triggers
+- Datos de ejemplo (seed data)
 
-```sql
--- Tabla de ejemplo: EMPLEADOS
-CREATE TABLE empleados (
-    id_empleado NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR2(100) NOT NULL,
-    apellido VARCHAR2(100) NOT NULL,
-    email VARCHAR2(255) UNIQUE NOT NULL,
-    departamento_id NUMBER,
-    salario NUMBER(10,2),
-    fecha_contratacion DATE DEFAULT SYSDATE,
-    activo CHAR(1) DEFAULT 'Y',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tabla: DEPARTAMENTOS
-CREATE TABLE departamentos (
-    id_departamento NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR2(100) NOT NULL,
-    ubicacion VARCHAR2(200),
-    presupuesto NUMBER(12,2)
-);
-
--- Tabla: PROYECTOS
-CREATE TABLE proyectos (
-    id_proyecto NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR2(200) NOT NULL,
-    descripcion CLOB,
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    estado VARCHAR2(50),
-    lead_id NUMBER REFERENCES empleados(id_empleado)
-);
+Para recargar el schema:
+```bash
+docker exec -i oracle-apex-demo_sql_1 sqlplus sys/<password>@localhost:1521/FREE as sysdba < schema.sql
 ```
 
-## 🌐 Acceso a la Aplicación
+## 🔧 Scripts Disponibles
 
-### URLs
-
-| Servicio | URL | Puerto |
-|----------|-----|--------|
-| Oracle APEX | http://localhost:8080 | 8080 |
-| ORDS Admin | http://localhost:8080/ords | 8080 |
-| SQL Developer Web | http://localhost:8080/ords/sql-developer | 8080 |
-
-### Credenciales
-
-```
-Workspace: DEMO_WORKSPACE
-User: ADMIN
-Password: Oracle123! (cambiar en producción)
-```
-
-## 🐳 Docker Configuration
-
-### Servicios
-
-```yaml
-services:
-  oracle-xe:
-    image: container-registry.oracle.com/database/express:21.3.0
-    ports:
-      - "1521:1521"
-    environment:
-      ORACLE_PWD: Oracle123!
-      
-  ords:
-    image: container-registry.oracle.com/database/ords:23.2
-    ports:
-      - "8080:8080"
-    depends_on:
-      - oracle-xe
-```
-
-### Comandos Útiles
+| Script | Descripción |
+|--------|-------------|
+| `setup.sh` | Inicializa el ambiente |
+| `deploy.sh` | Despliega la aplicación |
+| `monitor.sh` | Monitorea servicios |
+| `backup_restore.sh` | Backup y recuperación |
 
 ```bash
-# Iniciar
-docker-compose up -d
-
-# Ver logs
-docker-compose logs -f
-
-# Backup de BD
-docker-compose exec oracle-xe expdp user/password full=Y
-
-# Restaurar
-docker-compose exec oracle-xe impdp user/password full=Y
+chmod +x setup.sh deploy.sh monitor.sh backup_restore.sh
+./setup.sh
 ```
 
-## 📊 Desarrollo APEX
+## 🛡️ Seguridad
 
-### Importar Aplicación
+Ver [SECURITY.md](SECURITY.md) para:
+- Configuración de políticas de seguridad
+- Gestión de usuarios y roles
+- Vault de contraseñas
+- Auditoría
 
-1. Acceder a APEX Workspace
-2. Ir a: Application Builder → Import
-3. Subir archivo `f100.sql`
-4. Configurar workspaces y autenticación
+## 📚 Documentación
 
-### Crear REST API
-
-```sql
--- Habilitar ORDS
-BEGIN
-    ORDS.ENABLE_OBJECT(p_object => 'EMPLOYEES');
-    COMMIT;
-END;
-/
-
--- Crear módulo REST
-BEGIN
-    ORDS.DEFINE_MODULE(
-        p_module_name => 'demo-api',
-        p_base_path => '/demo/',
-        p_items_per_page => 25
-    );
-    
-    ORDS.DEFINE_TEMPLATE(
-        p_module_name => 'demo-api',
-        p_pattern => 'employees',
-        p_priority => 0,
-        p_etag_type => 'HASH'
-    );
-    
-    ORDS.DEFINE_HANDLER(
-        p_module_name => 'demo-api',
-        p_pattern => 'employees',
-        p_method => 'GET',
-        p_source_type => 'JSON_QUERY'
-    );
-END;
-/
-```
-
-## 🔒 Seguridad
-
-### Mejores Prácticas
-
-- ✅ Cambiar contraseñas por defecto
-- ✅ Usar Oracle Wallet para credenciales
-- ✅ Habilitar VPD (Virtual Private Database)
-- ✅ Configurar Audit Vault
-- ✅ Usar HTTPS en producción
-- ✅ Sanitizar inputs (SQL injection prevention)
-
-Ver [SECURITY.md](SECURITY.md) para detalles completos.
-
-## 📈 Monitoreo
-
-```bash
-# Health check
-./monitor.sh
-
-# Ver sesiones
-sqlplus system/password@//localhost:1521/XEPDB1 @check_sessions.sql
-
-# Ver tablaspace usage
-sqlplus system/password@//localhost:1521/XEPDB1 @tablespace_usage.sql
-```
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Guía completa de despliegue
+- [SECURITY.md](SECURITY.md) - Configuración de seguridad
 
 ## 🤝 Contribuir
 
-1. Fork → Branch → Commit → PR
-2. Scripts SQL deben seguir coding standards
-3. Tests de integración incluidos
-4. Documentación actualizada
+Lee [CONTRIBUTING.md](CONTRIBUTING.md) antes de contribuir.
 
-## 📄 Licencia
+## 📝 Licencia
 
-MIT - ver [LICENSE](LICENSE)
-
-## 🔗 Recursos
-
-- [Oracle APEX Documentation](https://docs.oracle.com/en/database/oracle/application-express/)
-- [Oracle Live SQL](https://livesql.oracle.com/)
-- [APEX Community](https://apex.oracle.com/community)
+MIT - vea [LICENSE](LICENSE)
