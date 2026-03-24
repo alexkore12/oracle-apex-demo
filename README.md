@@ -68,18 +68,27 @@ sqlplus usuario/password@//localhost:1521/XEPDB1 @schema.sql
 
 ```
 oracle-apex-demo/
-├── schema.sql              # Definición completa del esquema
-├── setup.sh               # Script de setup
-├── docker-compose.yml     # Oracle XE + ORDS
-├── monitor.sh             # Health check
+├── .dockerignore
+├── .env.example
+├── .gitattributes
+├── .gitignore
 ├── .github/
 │   ├── dependabot.yml     # Actualizaciones automáticas
 │   └── CODEOWNERS         # Propietarios
-├── SECURITY.md            # Política de seguridad
-├── CONTRIBUTING.md        # Guía de contribución
+├── backup_restore.sh      # Script de backup y restore
 ├── CODE_OF_CONDUCT.md
+├── CODEOWNERS
+├── CONTRIBUTING.md        # Guía de contribución
+├── deploy.sh              # Script de despliegue
+├── DEPLOYMENT.md          # Guía de despliegue detallada
+├── docker-compose.yml     # Oracle XE + APEX
+├── health_check.py        # Verificación de salud
 ├── LICENSE
-└── README.md
+├── monitor.sh             # Script de monitoreo
+├── README.md
+├── schema.sql             # Definición completa del esquema
+├── SECURITY.md            # Política de seguridad
+└── setup.sh               # Script de inicialización
 ```
 
 ## 🗄️ Esquema de Base de Datos
