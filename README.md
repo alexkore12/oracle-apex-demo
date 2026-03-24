@@ -1,35 +1,56 @@
 # 🗄️ Oracle APEX Demo
 
+> Demo completo de aplicación Oracle Application Express (APEX) con estructura de base de datos, configuración automática y scripts de deployment.
+
 [![Oracle APEX](https://img.shields.io/badge/Oracle%20APEX-23.x-orange.svg)](https://apex.oracle.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
 
 ## 📋 Descripción
 
-Demo completo de aplicación Oracle APEX con estructura de base de datos completa, configuración de setup automática y scripts de deployment.
+Aplicación demo que demuestra las capacidades de Oracle APEX 23.x incluyendo:
+- Esquema de base de datos completo
+- Aplicación web interactiva
+- Reportes y gráficos
+- Autenticación y autorización
+- REST API integration
+- Configuración de deployment automatizada
 
 ## ✨ Características
 
-- 🗄️ **SQL Schema** - Estructura completa de base de datos Oracle
-- 📦 **Setup Script** - Inicialización automática de esquemas
-- 🐳 **Docker** - Contenedorizable con docker-compose
-- 🔧 **Health Check** - Script de verificación de salud
-- 📚 **Documentación** - README completo
-- 🛡️ **Seguridad** - Políticas y configuración de seguridad
+- 🗄️ **SQL Schema** - Estructura completa con tablas, vistas, secuencias
+- 📦 **Setup Script** - Inicialización automática del esquema
+- 🐳 **Docker** - Oracle XE oORDS en contenedores
+- 🔧 **Health Check** - Verificación de salud del sistema
+- 📚 **Documentación** - Guía completa de uso
+- 🛡️ **Seguridad** - VPD, políticas de seguridad
+- 📊 **Reporting** - Dashboards y reportes
+- 🔄 **REST Services** - Publicación de REST APIs
+- 📱 **Responsive** - Diseño adaptativo
 
 ## 🚀 Inicio Rápido
 
-### Docker Compose
+### Docker Compose (Recomendado)
 
 ```bash
+# Clonar repositorio
+git clone https://github.com/alexkore12/oracle-apex-demo.git
+cd oracle-apex-demo
+
 # Iniciar servicios
 docker-compose up -d
 
 # Ver estado
 docker-compose ps
 
-# Ver logs
-docker-compose logs -f
+# Esperar a que Oracle esté listo (~5 min)
+docker-compose logs -f oracle-xe
+
+# Acceder a APEX
+# URL: http://localhost:8080
+# Workspace: INTERNAL
+# User: ADMIN
+# Password: Ver en docker-compose.yml o logs
 ```
 
 ### Configuración Manual
@@ -47,187 +68,197 @@ sqlplus usuario/password@//localhost:1521/XEPDB1 @schema.sql
 
 ```
 oracle-apex-demo/
-├── schema.sql              # Definición de esquemas y tablas
-├── setup.sh               # Script de configuración
-├── health_check.py       # Script de health check
-├── docker-compose.yml    # Orquestación Docker
-├── Dockerfile            # Imagen Oracle APEX
-├── .dockerignore
-├── .env.example
-├── .gitignore
-├── LICENSE
-├── CODEOWNERS
-├── CONTRIBUTING.md
-├── SECURITY.md
+├── schema.sql              # Definición completa del esquema
+├── setup.sh               # Script de setup
+├── docker-compose.yml     # Oracle XE + ORDS
+├── monitor.sh             # Health check
+├── .github/
+│   ├── dependabot.yml     # Actualizaciones automáticas
+│   └── CODEOWNERS         # Propietarios
+├── SECURITY.md            # Política de seguridad
+├── CONTRIBUTING.md        # Guía de contribución
 ├── CODE_OF_CONDUCT.md
+├── LICENSE
 └── README.md
 ```
 
-## 🛠️ Requisitos
-
-- Oracle Database 21c o superior
-- Oracle APEX 23.x
-- Docker (opcional)
-
-## 📄 Configuración de Base de Datos
-
-```sql
--- Conectar como SYSDBA
-sqlplus / as sysdba
-
--- Crear tablespace
-CREATE TABLESPACE apex_data
-DATAFILE 'apex_data.dbf'
-SIZE 100M AUTOEXTEND ON;
-
--- Crear usuario
-CREATE USER apexuser IDENTIFIED BY password
-DEFAULT TABLESPACE apex_data
-QUOTA UNLIMITED ON apex_data;
-```
-
-## 🔧 Scripts Disponibles
-
-| Script | Descripción |
-|--------|-------------|
-| `schema.sql` | Define estructura de BD |
-| `setup.sh` | Inicialización automática |
-
-## 🌐 Referencias
-
-- [Oracle APEX Documentation](https://docs.oracle.com/en/database/oracle/apex/)
-- [Oracle Live SQL](https://livesql.oracle.com/)
-- [Docker Hub - Oracle Database](https://hub.docker.com/_/oracle-database)
-
-## 📝 Licencia
-
-## 🐳 Docker
->>>>>>> f3b8ad25eeed36d6866dde9159e92c4847719e49
-
-### Variables de Entorno
-
-| Variable | Descripción | Valor por defecto |
-|----------|-------------|-------------------|
-| `ORACLE_PWD` | Password de SYS | oracle |
-| `ORACLE_DATABASE` | Nombre PDB | XEPDB1 |
-| `ORACLE_CHARSET` | Charset | AL32UTF8 |
-| `APEX_ADMIN_EMAIL` | Email admin | admin@example.com |
-| `APEX_ADMIN_PASSWORD` | Password admin | apex123 |
-
-### Puertos
-
-| Puerto | Servicio |
-|--------|----------|
-| 1521 | Oracle Listener |
-| 5500 | Oracle EM Express |
-
-### Build Personalizado
-
-```bash
-docker build -t oracle-apex-demo .
-docker run -d -p 1521:1521 -p 5500:5500 oracle-apex-demo
-```
-
-## 🗄️ Schema SQL
+## 🗄️ Esquema de Base de Datos
 
 ### Tablas Principales
 
-El archivo `schema.sql` contiene:
+```sql
+-- Tabla de ejemplo: EMPLEADOS
+CREATE TABLE empleados (
+    id_empleado NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR2(100) NOT NULL,
+    apellido VARCHAR2(100) NOT NULL,
+    email VARCHAR2(255) UNIQUE NOT NULL,
+    departamento_id NUMBER,
+    salario NUMBER(10,2),
+    fecha_contratacion DATE DEFAULT SYSDATE,
+    activo CHAR(1) DEFAULT 'Y',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-- Definición de tablespaces
-- Creación de usuarios/esquemas
-- Tablas de aplicación
-- Sequences, triggers
-- Procedures y functions
-- Vistas de soporte
+-- Tabla: DEPARTAMENTOS
+CREATE TABLE departamentos (
+    id_departamento NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR2(100) NOT NULL,
+    ubicacion VARCHAR2(200),
+    presupuesto NUMBER(12,2)
+);
 
-### Ejecutar SQL Manual
-
-```bash
-# Con docker exec
-docker exec -it oracle-apex-demo sqlplus / as sysdba
-
-# Ejecutar script
-@schema.sql
+-- Tabla: PROYECTOS
+CREATE TABLE proyectos (
+    id_proyecto NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR2(200) NOT NULL,
+    descripcion CLOB,
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    estado VARCHAR2(50),
+    lead_id NUMBER REFERENCES empleados(id_empleado)
+);
 ```
 
-## 🔧 Health Check
+## 🌐 Acceso a la Aplicación
 
-```bash
-python3 health_check.py
+### URLs
+
+| Servicio | URL | Puerto |
+|----------|-----|--------|
+| Oracle APEX | http://localhost:8080 | 8080 |
+| ORDS Admin | http://localhost:8080/ords | 8080 |
+| SQL Developer Web | http://localhost:8080/ords/sql-developer | 8080 |
+
+### Credenciales
+
+```
+Workspace: DEMO_WORKSPACE
+User: ADMIN
+Password: Oracle123! (cambiar en producción)
 ```
 
-Verifica:
-- Conexión a Oracle
-- Estado del listener
-- Tablespaces disponibles
-- Esquemas existentes
+## 🐳 Docker Configuration
 
-## 🔐 Seguridad
+### Servicios
 
-### Configuración de Credenciales
+```yaml
+services:
+  oracle-xe:
+    image: container-registry.oracle.com/database/express:21.3.0
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PWD: Oracle123!
+      
+  ords:
+    image: container-registry.oracle.com/database/ords:23.2
+    ports:
+      - "8080:8080"
+    depends_on:
+      - oracle-xe
+```
+
+### Comandos Útiles
 
 ```bash
-# Usar variables de entorno
-export ORACLE_PWD="tu_password_seguro"
-export ORACLE_DATABASE="XEPDB1"
+# Iniciar
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Backup de BD
+docker-compose exec oracle-xe expdp user/password full=Y
+
+# Restaurar
+docker-compose exec oracle-xe impdp user/password full=Y
 ```
+
+## 📊 Desarrollo APEX
+
+### Importar Aplicación
+
+1. Acceder a APEX Workspace
+2. Ir a: Application Builder → Import
+3. Subir archivo `f100.sql`
+4. Configurar workspaces y autenticación
+
+### Crear REST API
+
+```sql
+-- Habilitar ORDS
+BEGIN
+    ORDS.ENABLE_OBJECT(p_object => 'EMPLOYEES');
+    COMMIT;
+END;
+/
+
+-- Crear módulo REST
+BEGIN
+    ORDS.DEFINE_MODULE(
+        p_module_name => 'demo-api',
+        p_base_path => '/demo/',
+        p_items_per_page => 25
+    );
+    
+    ORDS.DEFINE_TEMPLATE(
+        p_module_name => 'demo-api',
+        p_pattern => 'employees',
+        p_priority => 0,
+        p_etag_type => 'HASH'
+    );
+    
+    ORDS.DEFINE_HANDLER(
+        p_module_name => 'demo-api',
+        p_pattern => 'employees',
+        p_method => 'GET',
+        p_source_type => 'JSON_QUERY'
+    );
+END;
+/
+```
+
+## 🔒 Seguridad
 
 ### Mejores Prácticas
 
-1. **No** exponer Oracle directamente a internet
-2. Usar password complejo para SYS/SYSTEM
-3. Limitar privilegios de usuarios de aplicación
-4. Habilitar audit trail
-5. Mantener Oracle patched
+- ✅ Cambiar contraseñas por defecto
+- ✅ Usar Oracle Wallet para credenciales
+- ✅ Habilitar VPD (Virtual Private Database)
+- ✅ Configurar Audit Vault
+- ✅ Usar HTTPS en producción
+- ✅ Sanitizar inputs (SQL injection prevention)
 
-## ☁️ Deployment
+Ver [SECURITY.md](SECURITY.md) para detalles completos.
 
-### Oracle Cloud
+## 📈 Monitoreo
 
 ```bash
-# Crear ATP (Autonomous Transaction Processing)
-oci db autonomous-database create \
-    --compartment-id $COMPARTMENT_ID \
-    --display-name "apex-demo" \
-    --db-name "apexdemo" \
-    --cpu-core-count 1 \
-    --storage-tb 1
+# Health check
+./monitor.sh
+
+# Ver sesiones
+sqlplus system/password@//localhost:1521/XEPDB1 @check_sessions.sql
+
+# Ver tablaspace usage
+sqlplus system/password@//localhost:1521/XEPDB1 @tablespace_usage.sql
 ```
 
-### On-Premise
+## 🤝 Contribuir
 
-Requisitos:
-- Oracle Database 19c+
-- 8GB RAM mínimo
-- 50GB disco
-
-## 📝 Changelog
-
-### v2.0.0 (2026-03-23)
-- ✅ health_check.py añadido
-- ✅ setup.sh mejorado
-- ✅ README completo
-- ✅ CODEOWNERS añadido
-- ✅ Docker Compose optimizado
-
-### v1.0.0 (2026-03-21)
-- ✅ Schema SQL inicial
-- ✅ Docker support básico
-
-## 🤝 Contributing
-
-Ver [CONTRIBUTING.md](CONTRIBUTING.md) para guidelines.
+1. Fork → Branch → Commit → PR
+2. Scripts SQL deben seguir coding standards
+3. Tests de integración incluidos
+4. Documentación actualizada
 
 ## 📄 Licencia
 
-MIT - ver [LICENSE](LICENSE) para detalles.
+MIT - ver [LICENSE](LICENSE)
 
-## 👤 Autor
+## 🔗 Recursos
 
-**alexkore12** - https://github.com/alexkore12
-
-## 🤖 Actualizado por
-
-OpenClaw AI Assistant - 2026-03-23
-*Mejoras: health check, setup script, documentación completa*
+- [Oracle APEX Documentation](https://docs.oracle.com/en/database/oracle/application-express/)
+- [Oracle Live SQL](https://livesql.oracle.com/)
+- [APEX Community](https://apex.oracle.com/community)
